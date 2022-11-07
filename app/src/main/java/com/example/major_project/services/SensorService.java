@@ -11,6 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -51,16 +52,19 @@ public class SensorService extends Service implements SensorEventListener {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        latLngBroadcastReceiver = new LatLngBroadcastReceiver();
+        final IntentFilter intentFilter = new IntentFilter("LatLngBroadcastReceiver");
+        LocalBroadcastManager.getInstance(this).registerReceiver(latLngBroadcastReceiver, intentFilter);
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 //        classifier = new TensorFlowClassifier(getApplicationContext());
-        latLngBroadcastReceiver = new LatLngBroadcastReceiver();
-        final IntentFilter intentFilter = new IntentFilter("LatLngBroadcastReceiver");
-        LocalBroadcastManager.getInstance(this).registerReceiver(latLngBroadcastReceiver, intentFilter);
+
 //        api = AzureDB.getClient().create(ApiInterface.class);
 //        tinyDB = new TinyDB(getApplicationContext());
     }
+
 
 
     @Override
@@ -80,9 +84,7 @@ public class SensorService extends Service implements SensorEventListener {
         float y = event.values[1];
         float z = event.values[2];
 
-        //String output = "X -> "+String.valueOf(x)+"\nY -> "+String.valueOf(y)+"\nZ -> "+String.valueOf(z);
 
-        //Toast.makeText(getApplicationContext(), output,Toast.LENGTH_SHORT).show();
 
 
 
@@ -111,7 +113,8 @@ public class SensorService extends Service implements SensorEventListener {
             data.addAll(slope(x));
             data.addAll(slope(y));
             data.addAll(slope(z));
-            Toast.makeText(this, "data received ", Toast.LENGTH_LONG).show();
+            String output = "X-> "+String.valueOf(x)+" Y-> "+String.valueOf(y)+" Z-> "+String.valueOf(z);
+            Log.d("data ",output+" lat-> "+lat+" lng-> "+lng);
             //data.addAll(x);
             //data.addAll(y);
             //data.addAll(z);
@@ -164,11 +167,12 @@ public class SensorService extends Service implements SensorEventListener {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            Toast.makeText(context, "location received", Toast.LENGTH_SHORT).show();
             Bundle b = intent.getExtras();
             lat = b.getString("lat");
             lng = b.getString("lng");
 
-            System.out.println("Raghav location testing -> "+lat+","+lng);
+            Log.d("location testing ",lat+","+lng);
 
         }
     }

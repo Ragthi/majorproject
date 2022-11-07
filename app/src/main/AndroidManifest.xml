@@ -39,6 +39,7 @@
             android:name=".services.SensorService"
             android:enabled="true"
             android:exported="true" />
+
     </application>
 
 </manifest>
