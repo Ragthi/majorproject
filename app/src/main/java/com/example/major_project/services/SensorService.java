@@ -59,7 +59,8 @@ public class SensorService extends Service implements SensorEventListener {
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-//        classifier = new TensorFlowClassifier(getApplicationContext());
+        classifier = new TensorFlowClassifier(getApplicationContext());
+
 
 //        api = AzureDB.getClient().create(ApiInterface.class);
 //        tinyDB = new TinyDB(getApplicationContext());
@@ -94,7 +95,7 @@ public class SensorService extends Service implements SensorEventListener {
 
     }
 
-    public void sendBroadcast(float x,float y,float z){
+    public void sendBroadcast(float x,float y,float z){365465l;k;   3
         Intent intent = new Intent("SensorBroadcastReceiver");
         Bundle bundle = new Bundle();
         bundle.putFloat("Acc_X",x);
@@ -121,19 +122,22 @@ public class SensorService extends Service implements SensorEventListener {
             //data.addAll(meanX(x));
             //data.addAll(meanY(y));
             //data.addAll(meanZ(z));
-            //TODO classify data using ml model
-//            results = classifier.predictProbabilities(toFloatArray(data));
-//
-//            String goodProb =  Float.toString(round(results[0], 3));
-//            String badProb =  Float.toString(round(results[1], 3));
-//            String resultText = "Good -> "+goodProb+"\nBad -> "+badProb;
-//            if(round(results[1],3)>=0.9){
-//                Toast.makeText(getApplicationContext(),"Pothole -> "+badProb,Toast.LENGTH_SHORT).show();
-//                //TODO upload pothole data to db
-//                //uploadPotholetoFBDB(lat,lng);
-////                uploadPotholeDataMongo(lat,lng);
-//
-//            }
+//            TODO classify data using ml model
+            results = classifier.predictProbabilities(toFloatArray(data));
+
+            String goodProb =  Float.toString(round(results[0], 3));
+            String badProb =  Float.toString(round(results[1], 3));
+            String resultText = "Good -> "+goodProb+" Bad -> "+badProb;
+            if(round(results[1],3)>=0.9){
+//                Toast.makeText(getApplicationContext(),"Pothole -> "+resultText,Toast.LENGTH_SHORT).show();
+                Log.d("result ->","Pothole "+resultText);
+                //TODO upload pothole data to db
+                //uploadPotholetoFBDB(lat,lng);
+//                uploadPotholeDataMongo(lat,lng);
+
+            }else{
+                Log.d("result ->","No pothole "+resultText);
+            }
 
             x.clear();
             y.clear();
